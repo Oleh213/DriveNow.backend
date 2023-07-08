@@ -87,8 +87,6 @@ namespace DriveNow.Controllers
 					return BadRequest("Bad!");
 				}
 			}
-			// fdfgfgf;
-			// hello;
 			return Ok("Finished!"); 
 		}
 		[HttpPost("Token")]
