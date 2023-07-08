@@ -88,8 +88,6 @@ namespace DriveNow.Controllers
 				}
 			}
 			return Ok("Finished!");
-
-			// hello;
 		}
 		[HttpPost("Token")]
 		public string GenerateToken(User user) {
