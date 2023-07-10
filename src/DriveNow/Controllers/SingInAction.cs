@@ -112,5 +112,46 @@ namespace DriveNow.Controllers
 
 			return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+		[HttpGet("ShowAllUsers")]
+		public async Task<IActionResult> ShowAllUsers() {
+
+			return Ok(_context.users);
+		}
+
+		[HttpPost("SingInWithGoogle")]
+
+		public async Task<IActionResult> SingInGoogle(GoogleSingInModel googleSingInModel) {
+
+			var user = await _context.users.FirstOrDefaultAsync(x => x.Email == googleSingInModel.Email);
+
+			if (user != null) {
+
+				var token = GenerateToken(user);
+
+				return Ok(new
+				{
+
+					access_token = token
+				});
+			}
+
+			else if (user == null) {
+
+                _context.users.Add(new User
+                {
+                    UserId = Guid.NewGuid(),
+                    FirstName = googleSingInModel.FirstName,
+                    SecondName = googleSingInModel.SecondName,
+                    Email = googleSingInModel.Email
+                });
+
+				await _context.SaveChangesAsync();
+
+				return Ok("Successful!");
+            }
+
+			return BadRequest("Finished");
+		}
 	}
 }
