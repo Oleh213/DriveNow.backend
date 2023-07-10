@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriveNow.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20230705122631_First")]
+    [Migration("20230710184301_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -48,7 +48,6 @@ namespace DriveNow.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondName")

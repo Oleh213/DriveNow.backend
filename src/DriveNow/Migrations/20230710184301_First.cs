@@ -20,7 +20,7 @@ namespace DriveNow.Migrations
                     SecondName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Number = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Birthday = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Sex = table.Column<int>(type: "int", nullable: true),
                     Language = table.Column<int>(type: "int", nullable: true)

@@ -1,5 +1,6 @@
 ﻿using DriveNow.Context;
 using DriveNow.DBContext;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 internal class Program
@@ -10,8 +11,54 @@ internal class Program
 
         // Add services to the container.
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAllCors", builder =>
+            {
+                builder
+                .WithOrigins()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowedToAllowWildcardSubdomains()
+                .SetIsOriginAllowed(delegate (string requestingOrigin)
+                {
+                    return true;
+                }).Build();
+            });
+        });
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+        var authOptionConfiguration = builder.Configuration.GetSection("Auth");
+
+        builder.Services.Configure<AuthOptions>(authOptionConfiguration);
+
+        var authOptions = builder.Configuration.GetSection("Auth").Get<AuthOptions>(); 
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = authOptions.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = authOptions.Audience,
+
+            ValidateLifetime = true,
+
+            IssuerSigningKey = authOptions.GetSymmetricSecurityKey(),
+            ValidateIssuerSigningKey = true,
+
+
+        };
+    }
+    );
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -20,11 +67,7 @@ internal class Program
             option.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"));
         });
 
-        var authOptionConfiguration = builder.Configuration.GetSection("Auth");
-
-        builder.Services.Configure<AuthOptions>(authOptionConfiguration);
-
-        var authOptions = builder.Configuration.GetSection("Auth").Get<AuthOptions>(); 
+        
 
         var app = builder.Build();
 
@@ -34,6 +77,8 @@ internal class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors("AllowAllCors");
 
         app.UseHttpsRedirection();
 
