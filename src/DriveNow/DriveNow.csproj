@@ -19,6 +19,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.61.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.9" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,11 +30,15 @@
     <None Remove="Context\" />
     <None Remove="DBContext\" />
     <None Remove="Controllers\" />
+    <None Remove="Handlier\" />
+    <None Remove="Commands\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Context\" />
     <Folder Include="DBContext\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Handlier\" />
+    <Folder Include="Commands\" />
   </ItemGroup>
 </Project>
