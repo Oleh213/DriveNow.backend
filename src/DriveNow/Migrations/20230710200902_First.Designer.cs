@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DriveNow.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    [Migration("20230710184301_First")]
+    [Migration("20230710200902_First")]
     partial class First
     {
         /// <inheritdoc />

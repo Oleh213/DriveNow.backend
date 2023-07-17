@@ -1,7 +1,7 @@
 ﻿using System;
 namespace DriveNow.Model
 {
-	public class GoogleSingInModel
+	public class CredentialModel
 	{
         public string Credential { get; set; }
     }

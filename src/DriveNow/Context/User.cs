@@ -1,4 +1,6 @@
 ﻿using System;
+using DriveNow.Enums;
+
 namespace DriveNow.Context
 {
 	public class User
@@ -20,15 +22,5 @@ namespace DriveNow.Context
 		public SexEnum? Sex { get; set; }
 
 		public LanguageEnum? Language { get; set; }
-	}
-
-	public enum SexEnum {
-		Male,
-		Female
-	}
-
-	public enum LanguageEnum {
-		Ukrainian,
-		English
 	}
 }
