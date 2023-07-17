@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
 using DriveNow.Commands;
 using DriveNow.Context;
 using DriveNow.DBContext;
@@ -15,7 +16,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DriveNow.Handlier
 {
-    public class SingInUserCommandHandler : IRequestHandler<SingInCommand, ResultUserSingInCommand>
+    public class SingInUserCommandHandler : IRequestHandler<SingInCommand, string>
     {
         public ShopContext _context;
 
@@ -23,96 +24,67 @@ namespace DriveNow.Handlier
 
         public readonly AppSettings _applicationSettings;
 
-        public SingInUserCommandHandler(ShopContext context, IOptions<AuthOptions> options, IOptions<AppSettings> _applicationSettings)
+        private readonly IMapper _mapper;
+
+        public SingInUserCommandHandler(ShopContext context, IOptions<AuthOptions> options, IOptions<AppSettings> _applicationSettings, IMapper mapper)
         {
             _context = context;
             this.options = options;
             this._applicationSettings = _applicationSettings.Value;
+            _mapper = mapper;
         }
-
-        public async Task<ResultUserSingInCommand> Handle(SingInCommand command, CancellationToken cancellationToken) {
-
-            var result = new ResultUserSingInCommand();
-
-            if (command.Email != null)
+        public async Task<string> Handle(SingInCommand command, CancellationToken cancellationToken)
+        {
+            if (command.SingInModel.Email != null)
             {
-                var user = await _context.users.FirstOrDefaultAsync(x => x.Email == command.Email);
+                var user_entity = await _context.users.FirstOrDefaultAsync(x => x.Email == command.SingInModel.Email);
+
+                var user = _mapper.Map<User, UserModel>(user_entity);
 
                 if (user != null)
                 {
                     var sha = SHA256.Create();
 
-                    var asByteArray = Encoding.Default.GetBytes(command.Password);
+                    var asByteArray = Encoding.Default.GetBytes(command.SingInModel.Password);
 
                     var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
 
-                    if (user.Email == command.Email && user.Password == hashedPassword)
+                    if (user.Email == command.SingInModel.Email && user.Password == hashedPassword)
                     {
                         var token = GenerateToken(user);
 
-                        result.Message = "Successful!";
-
-                        result.Success = true;
-
-                        result.Token = token;
+                        return (token);
                     }
-                    else
-                    {
-                        result.Message = "Bad!";
-
-                        result.Success = false;
-                    }
-                }
-                else
-                {
-                    result.Message = "Bad!";
-                    result.Success = false;
                 }
             }
 
-            else if (command.Number != null)
+            else if (command.SingInModel.Number != null)
             {
 
-                var user = await _context.users.FirstOrDefaultAsync(x => x.Number == command.Number);
+                var user_entity = await _context.users.FirstOrDefaultAsync(x => x.Email == command.SingInModel.Email);
+
+                var user = _mapper.Map<User, UserModel>(user_entity);
 
                 if (user != null)
                 {
                     var sha = SHA256.Create();
 
-                    var asByteArray = Encoding.Default.GetBytes(command.Password);
+                    var asByteArray = Encoding.Default.GetBytes(command.SingInModel.Password);
 
                     var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
 
-                    if (user.Number == command.Number && user.Password == hashedPassword)
+                    if (user.Number == command.SingInModel.Number && user.Password == hashedPassword)
                     {
-
                         var token = GenerateToken(user);
 
-                        result.Message = "Successful!";
-
-                        result.Success = true;
-
-                        result.Token = token;
+                        return (token) ;
                     }
-                    else
-                    {
-                        result.Message = "Bad!";
-
-                        result.Success = false;
-                    }
-                }
-                else
-                {
-                    result.Message = "Bad!";
-
-                    result.Success = false;
                 }
             }
-            return result;
-
+            return null;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(UserModel user)
         {
 
             var authParams = options.Value;

@@ -75,9 +75,12 @@ internal class Program
 
 
         builder.Services.AddDbContext<ShopContext>(option =>
-        {
-            option.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"));
-        });
+            option.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"))
+        );
+
+        builder.Services.AddTransient<ShopContext>();
+
+        builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
         var app = builder.Build();
 

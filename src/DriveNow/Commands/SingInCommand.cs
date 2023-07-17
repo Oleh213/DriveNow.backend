@@ -1,15 +1,19 @@
 ﻿using System;
+using DriveNow.Model;
 using MediatR;
 
 namespace DriveNow.Commands
 {
-	public class SingInCommand : IRequest<ResultUserSingInCommand>
+	public class SingInCommand : IRequest<string>
 	{
-        public string Number { get; set; }
+        public SingInModel SingInModel { get; set; }
 
-        public string Email { get; set; }
+        public SingInCommand(SingInModel singnModel)
+        {
 
-        public string Password { get; set; }
+            SingInModel = singnModel;
+
+        }
     }
 }
 

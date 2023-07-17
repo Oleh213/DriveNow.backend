@@ -28,27 +28,9 @@ namespace DriveNow.Controllers
 		}
 
 		[HttpPost("SingInUser")]
-		public async Task<IActionResult> SingIn(SingInModel singInModel)
+		public async Task<string> SingIn(SingInModel singInModel, CancellationToken cancellationToken)
 		{
-			var command = new SingInCommand
-            {
-				Email = singInModel.Email,
-				Password = singInModel.Password,
-				Number = singInModel.Number
-			};
-
-			var result = await _mediator.Send(command);
-
-			if (result.Success) {
-
-				return Ok(new
-				{
-					access_token = result.Token
-				});
-
-			}
-
-			return BadRequest(result.Message);
+			return await _mediator.Send(new SingInCommand(singInModel),cancellationToken);
 
 		}
 		/*
@@ -59,26 +41,9 @@ namespace DriveNow.Controllers
 		}
 		*/
 		[HttpPost("SingInWithGoogle")]
-		public async Task<IActionResult> SingInGoogle([FromBody] CredentialModel test) {
+		public async Task<string> SingInGoogle([FromBody] GoogleSingInModel test, CancellationToken cancellationToken) {
 
-			var command = new SingInWithGoogleCommand
-			{
-
-				Credential = test.Credential
-			};
-
-			var result = await _mediator.Send(command);
-
-			if (result.Success) {
-
-				return Ok(new
-				{
-
-					access_token = result.Token
-				});
-			}
-
-			return BadRequest(result.Message);
+			return await _mediator.Send(new SingInWithGoogleCommand(test),cancellationToken);
 		}
 	}
 }

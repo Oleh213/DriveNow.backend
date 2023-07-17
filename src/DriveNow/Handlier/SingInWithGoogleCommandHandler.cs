@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AutoMapper;
 using DriveNow.Commands;
 using DriveNow.Context;
 using DriveNow.DBContext;
@@ -14,7 +15,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace DriveNow.Handlier
 {
-	public class SingInWithGoogleCommandHandler: IRequestHandler<SingInWithGoogleCommand, ResultUserSingInCommand>
+	public class SingInWithGoogleCommandHandler: IRequestHandler<SingInWithGoogleCommand, string>
 	{
         public ShopContext _context;
 
@@ -22,36 +23,35 @@ namespace DriveNow.Handlier
 
         public readonly AppSettings _applicationSettings;
 
-        public SingInWithGoogleCommandHandler(ShopContext context, IOptions<AuthOptions> options, IOptions<AppSettings> _applicationSettings)
+        private readonly IMapper _mapper;
+
+        public SingInWithGoogleCommandHandler(ShopContext context, IOptions<AuthOptions> options, IOptions<AppSettings> _applicationSettings, IMapper mapper)
 		{
             _context = context;
             this.options = options;
             this._applicationSettings = _applicationSettings.Value;
+            _mapper = mapper;
         }
 
-        public async Task<ResultUserSingInCommand> Handle(SingInWithGoogleCommand command, CancellationToken cancellationToken) {
-
-            var result = new ResultUserSingInCommand();
+        public async Task<string> Handle(SingInWithGoogleCommand command, CancellationToken cancellationToken) {
 
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
                 Audience = new List<string> { this._applicationSettings.GoogleClientId }
             };
 
-            var payload = await GoogleJsonWebSignature.ValidateAsync(command.Credential, settings);
+            var payload = await GoogleJsonWebSignature.ValidateAsync(command.SingInModel.Credential, settings);
 
-            var user = await _context.users.Where(x => x.Email == payload.Email).FirstOrDefaultAsync();
+            var user_entity = await _context.users.Where(x => x.Email == payload.Email).FirstOrDefaultAsync();
+
+            var user = _mapper.Map<User, UserModel>(user_entity);
 
             if (user != null)
             {
 
                 var token = GenerateToken(user);
 
-                result.Message = "Successful!";
-
-                result.Token = token;
-
-                result.Success = true;
+                return (token);
             }
 
             else if (user == null)
@@ -66,25 +66,21 @@ namespace DriveNow.Handlier
                     Email = payload.Email
                 };
 
-                await _context.SaveChangesAsync();
-
                 _context.users.Add(new_user);
 
-                var token = GenerateToken(new_user);
+                await _context.SaveChangesAsync();
 
-                result.Message = "Successful!";
+                var user_cheack = _mapper.Map<User, UserModel>(new_user);
 
-                result.Token = token;
+                var token = GenerateToken(user_cheack);
 
-                result.Success = true;
-
-                
+                return (token);
             }
 
-            return result;
+            return ("");
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(UserModel user)
         {
 
             var authParams = options.Value;
