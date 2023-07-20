@@ -63,7 +63,8 @@ namespace DriveNow.Handlier
                     UserId = Guid.NewGuid(),
                     FirstName = payload.FamilyName,
                     SecondName = payload.Name,
-                    Email = payload.Email
+                    Email = payload.Email,
+                    Role = Enums.Role.User
                 };
 
                 _context.users.Add(new_user);

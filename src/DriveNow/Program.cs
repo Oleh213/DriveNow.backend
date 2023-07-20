@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using DriveNow.Controllers;
 using System.Reflection;
+using DriveNow.Services;
+using DriveNow.Handlier;
 
 internal class Program
 {
@@ -71,7 +73,8 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        //builder.Services.AddScoped<SingInAction>();
+
+        builder.Services.AddScoped<IStorageService, StorageService>();
 
 
         builder.Services.AddDbContext<ShopContext>(option =>

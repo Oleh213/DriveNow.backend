@@ -22,6 +22,8 @@ namespace DriveNow.Model
         public SexEnum? Sex { get; set; }
 
         public LanguageEnum? Language { get; set; }
+
+        public Role Role { get; set; }
     }
 }
 
