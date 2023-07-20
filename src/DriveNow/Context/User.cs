@@ -22,5 +22,11 @@ namespace DriveNow.Context
 		public SexEnum? Sex { get; set; }
 
 		public LanguageEnum? Language { get; set; }
+
+		public Role Role { get; set; }
+
+		public ICollection<CartItem> CartItems { get; set; }
+
+		public ICollection<Order> Orders { get; set; }
 	}
 }

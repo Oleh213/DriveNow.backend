@@ -45,7 +45,8 @@ namespace DriveNow.Handlier
                         FirstName = command._registrationModel.FirstName,
                         SecondName = command._registrationModel.SecondName,
                         Number = command._registrationModel.Number,
-                        Password = hashedPassword
+                        Password = hashedPassword,
+                        Role = Enums.Role.User
                     });
 
                     await _context.SaveChangesAsync();
@@ -76,7 +77,8 @@ namespace DriveNow.Handlier
                         FirstName = command._registrationModel.FirstName,
                         SecondName = command._registrationModel.SecondName,
                         Email = command._registrationModel.Email,
-                        Password = hashedPassword
+                        Password = hashedPassword,
+                        Role = Enums.Role.User
                     });
 
                     await _context.SaveChangesAsync();
