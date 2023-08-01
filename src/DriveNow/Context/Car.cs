@@ -25,6 +25,8 @@ namespace DriveNow.Context
 
 		public string About { get; set; }
 
+		public string Address { get; set; }
+
         public string AccualFileUrl { get; set; }
 
 		public Guid CategoryForId { get; set; }
