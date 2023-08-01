@@ -81,6 +81,7 @@ namespace DriveNow.Handlier
                             Year = command._carModel.Year,
                             About = command._carModel.About,
                             AccualFileUrl = docName,
+                            Address = command._carModel.Address,
                             CategoryForId = categoty_main.CategoryId
                         });
 

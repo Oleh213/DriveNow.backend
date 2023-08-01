@@ -9,6 +9,7 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
+    <PackageReference Include="GoogleMaps.LocationServices" Version="1.2.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8">
@@ -44,8 +45,6 @@
     <Folder Include="Context\" />
     <Folder Include="DBContext\" />
     <Folder Include="Controllers\" />
-    <Folder Include="Handlier\" />
-    <Folder Include="Commands\" />
     <Folder Include="Model\Mapping\" />
     <Folder Include="Services\" />
   </ItemGroup>
