@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using DriveNow.Commands;
 using DriveNow.Context;
+using DriveNow.DTO;
 using DriveNow.Model;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,5 +34,12 @@ namespace DriveNow.Controllers
         {
             return await _mediator.Send(new ShowAllCarsCommand(model), cancellationToken);
         }
+
+		[HttpPost("ShowCarsForMap")]
+		public async Task<List<ShowCarForMapDTO>> ShowCarsForMap(ShowForAdminModel model,
+			CancellationToken cancellationToken)
+		{
+			return await _mediator.Send(new ShowCarForMapCommand(UserId), cancellationToken);
+		}
     }
 }

@@ -22,6 +22,8 @@ namespace DriveNow.Model
         public string Year { get; set; }
 
         public string About { get; set; }
+        
+        public string Address { get; set; }
 
         public string Category { get; set; }
 
