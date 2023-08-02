@@ -1,6 +1,8 @@
 using DriveNow.Commands;
+using DriveNow.Context;
 using DriveNow.DBContext;
 using DriveNow.DTO;
+using DriveNow.Enums;
 using DriveNow.Model;
 using GoogleMaps.LocationServices;
 using MediatR;
@@ -25,24 +27,19 @@ public class ShowCarForMapCommandHandler: IRequestHandler<ShowCarForMapCommand, 
         {
             List<ShowCarForMapDTO> cars = new List<ShowCarForMapDTO>();
 
-            foreach (var VARIABLE in _context.cars)
+            await _context.catogories.LoadAsync();
+
+            foreach (var context_cars in _context.cars)
             {
-                var locationService = new GoogleLocationService("AIzaSyB_y7ZhPC9n9GDExv0Lpa35BhGtE_tun5g");
-
-                var point = locationService.GetLatLongFromAddress(VARIABLE.Address);
-
-                var Latitude = point.Latitude;
-
-                var Longitude = point.Longitude;
-                
                 cars.Add(new ShowCarForMapDTO
                 {
-                    Category = VARIABLE.Catogories.CategoryName,
-                    NameCar = VARIABLE.NameCar,
-                    Discount = VARIABLE.Discount,
-                    Price = VARIABLE.Price,
-                    Longitude = Longitude,
-                    Latitude = Latitude
+                    Category = context_cars.Catogories.CategoryName,
+                    NameCar = context_cars.NameCar,
+                    Discount = context_cars.Discount,
+                    Price = context_cars.Price,
+                    Address = context_cars.Address,
+                    Free = context_cars.Free.ToString(),
+                    PhotoUrl = context_cars.AccualFileUrl
                 });
             }
 

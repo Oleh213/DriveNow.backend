@@ -9,8 +9,8 @@ public class ShowCarForMapCommand: IRequest<List<ShowCarForMapDTO>>
 
     public Guid _userId;
 
-    public ShowCarForMapCommand(Guid userId)
+    public ShowCarForMapCommand(Guid UserId)
     {
-        _userId = userId;
+        _userId = UserId;
     }
 }

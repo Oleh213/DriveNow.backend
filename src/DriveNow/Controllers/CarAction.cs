@@ -35,9 +35,8 @@ namespace DriveNow.Controllers
             return await _mediator.Send(new ShowAllCarsCommand(model), cancellationToken);
         }
 
-		[HttpPost("ShowCarsForMap")]
-		public async Task<List<ShowCarForMapDTO>> ShowCarsForMap(ShowForAdminModel model,
-			CancellationToken cancellationToken)
+		[HttpGet("ShowCarsForMap")]
+		public async Task<List<ShowCarForMapDTO>> ShowCarsForMap(CancellationToken cancellationToken)
 		{
 			return await _mediator.Send(new ShowCarForMapCommand(UserId), cancellationToken);
 		}
