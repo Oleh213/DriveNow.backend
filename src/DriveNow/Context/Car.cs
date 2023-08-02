@@ -1,4 +1,6 @@
 ﻿using System;
+using DriveNow.Enums;
+
 namespace DriveNow.Context
 {
 	public class Car
@@ -30,7 +32,8 @@ namespace DriveNow.Context
         public string AccualFileUrl { get; set; }
 
 		public Guid CategoryForId { get; set; }
-
+		
+		public Free Free { get; set; }
 		public Catogory Catogories { get; set; }
     }
 }

@@ -26,7 +26,6 @@ namespace DriveNow.Model
         public string Address { get; set; }
 
         public string Category { get; set; }
-
         public IFormFile FileUrl { get; set; }
     }
 }

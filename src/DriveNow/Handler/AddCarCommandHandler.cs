@@ -8,6 +8,7 @@ using AutoMapper;
 using DriveNow.Commands;
 using DriveNow.Context;
 using DriveNow.DBContext;
+using DriveNow.Enums;
 using DriveNow.Model;
 using DriveNow.Services;
 using MediatR;
@@ -82,6 +83,7 @@ namespace DriveNow.Handlier
                             About = command._carModel.About,
                             AccualFileUrl = docName,
                             Address = command._carModel.Address,
+                            Free = Free.Yes,
                             CategoryForId = categoty_main.CategoryId
                         });
 
@@ -113,6 +115,7 @@ namespace DriveNow.Handlier
                             Year = command._carModel.Year,
                             About = command._carModel.About,
                             AccualFileUrl = docName,
+                            Free = Free.Yes,
                             CategoryForId = new_category_id
                         });
 
