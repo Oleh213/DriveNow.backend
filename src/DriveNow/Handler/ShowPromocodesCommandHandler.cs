@@ -22,7 +22,7 @@ namespace DriveNow.Handlier
 
 		public async Task<List<Promocode>> Handle(ShowPromocodesCommand command,CancellationToken cancellationToken)
 		{
-			var user_ckeck = await _context.users.FirstOrDefaultAsync(x => x.UserId == command._model.UserId);
+			var user_ckeck = await _context.users.FirstOrDefaultAsync(x => x.UserId == command._userId);
 
 			if(user_ckeck != null)
 			{

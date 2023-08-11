@@ -5,7 +5,7 @@ using DriveNow.DBContext;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DriveNow.Handlier
+namespace DriveNow.Handler
 {
 	public class ShowAllCarsCommandHandler: IRequestHandler<ShowAllCarsCommand, List<Car>>
 	{
@@ -18,9 +18,16 @@ namespace DriveNow.Handlier
 
 		public async Task<List<Car>> Handle(ShowAllCarsCommand command, CancellationToken cancellationToken)
 		{
-			List<Car> cars = await _context.cars.ToListAsync();
+			var user_ckeck = await _context.users.FirstOrDefaultAsync(Userid => Userid.UserId == command.UserId);
 
-			return cars;
+			if (user_ckeck != null)
+			{
+				return _context.cars.ToList();
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 }

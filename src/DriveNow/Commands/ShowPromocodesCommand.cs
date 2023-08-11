@@ -7,11 +7,11 @@ namespace DriveNow.Commands
 {
 	public class ShowPromocodesCommand: IRequest<List<Promocode>>
 	{
-        public ShowForAdminModel _model;
+        public Guid _userId;
 
-        public ShowPromocodesCommand(ShowForAdminModel model)
+        public ShowPromocodesCommand(Guid userId)
 		{
-            _model = model;
+            _userId = userId;
 		}
 	}
 }

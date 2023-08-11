@@ -33,6 +33,7 @@ public class ShowCarForMapCommandHandler: IRequestHandler<ShowCarForMapCommand, 
             {
                 cars.Add(new ShowCarForMapDTO
                 {
+                    CarId = context_cars.CarId,
                     Category = context_cars.Catogories.CategoryName,
                     NameCar = context_cars.NameCar,
                     Discount = context_cars.Discount,

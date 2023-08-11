@@ -29,16 +29,23 @@ namespace DriveNow.Controllers
 			return await _mediator.Send(new CarCommand(model,UserId), cancellationToken);
 		}
 
-		[HttpPost("ShowAllCars")]
-		public async Task<List<Car>> ShowAllCars (ShowForAdminModel model, CancellationToken cancellationToken)
+		[HttpGet("ShowAllCars")]
+		public async Task<List<Car>> ShowAllCars (CancellationToken cancellationToken)
         {
-            return await _mediator.Send(new ShowAllCarsCommand(model), cancellationToken);
+            return await _mediator.Send(new ShowAllCarsCommand(UserId), cancellationToken);
         }
 
 		[HttpGet("ShowCarsForMap")]
 		public async Task<List<ShowCarForMapDTO>> ShowCarsForMap(CancellationToken cancellationToken)
 		{
 			return await _mediator.Send(new ShowCarForMapCommand(UserId), cancellationToken);
+		}
+
+		[HttpPost("{carId}/changeStatusById")]
+
+		public async Task<ResultModel> ChangeCarStatus([FromRoute] Guid carId, CancellationToken cancellationToken)
+		{
+			return await _mediator.Send(new ChangeStatusCommand(UserId, carId), cancellationToken);
 		}
     }
 }
