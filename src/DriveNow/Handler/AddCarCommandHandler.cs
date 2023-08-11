@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DriveNow.Handlier
+namespace DriveNow.Handler
 {
     public class AddCarCommandHandler : IRequestHandler<CarCommand, string>
     {

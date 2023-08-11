@@ -7,11 +7,11 @@ namespace DriveNow.Commands
 {
 	public class ShowAllCarsCommand: IRequest<List<Car>>
 	{
-        public ShowForAdminModel _model;
+        public Guid UserId;
 
-        public ShowAllCarsCommand(ShowForAdminModel model)
+        public ShowAllCarsCommand(Guid userId)
 		{
-			_model = model;
+			UserId = userId;
 		}
 	}
 }

@@ -3,7 +3,7 @@ namespace DriveNow.Model
 {
 	public class CarModel
 	{
-        public string NameCar { get; set; }
+		public string NameCar { get; set; }
 
         public int Power { get; set; }
 

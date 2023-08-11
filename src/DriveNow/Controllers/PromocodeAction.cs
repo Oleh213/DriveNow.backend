@@ -29,10 +29,10 @@ namespace DriveNow.Controllers
 			return await _mediator.Send(new PromocodeCommand(model, UserId), cancellationToken);
 		}
 
-		[HttpPost("ShowAllPromocode")]
-		public async Task<List<Promocode>> ShowAllPromocode(ShowForAdminModel model, CancellationToken cancellationToken)
+		[HttpGet("ShowAllPromocode")]
+		public async Task<List<Promocode>> ShowAllPromocode(CancellationToken cancellationToken)
 		{
-			return await _mediator.Send(new ShowPromocodesCommand(model), cancellationToken);
+			return await _mediator.Send(new ShowPromocodesCommand(UserId), cancellationToken);
 		}
 	}
 }

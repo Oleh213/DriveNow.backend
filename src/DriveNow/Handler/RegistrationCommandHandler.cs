@@ -9,7 +9,7 @@ using DriveNow.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DriveNow.Handlier
+namespace DriveNow.Handler
 {
 	public class RegistrationCommandHandler: IRequestHandler<RegistrationCommand, string>
 	{

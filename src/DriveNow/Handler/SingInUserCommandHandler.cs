@@ -35,11 +35,13 @@ namespace DriveNow.Handlier
         }
         public async Task<string> Handle(SingInCommand command, CancellationToken cancellationToken)
         {
-            if (command.SingInModel.Email != null)
+            var Email = await _context.users.FirstOrDefaultAsync(Email =>
+                Email.Email == command.SingInModel.EmailOrNumber);
+            var Number =
+                await _context.users.FirstOrDefaultAsync(Number => Number.Number == command.SingInModel.EmailOrNumber);
+            if (Email != null)
             {
-                var user_entity = await _context.users.FirstOrDefaultAsync(x => x.Email == command.SingInModel.Email);
-
-                var user = _mapper.Map<User, UserModel>(user_entity);
+                var user = _mapper.Map<User, UserModel>(Email);
 
                 if (user != null)
                 {
@@ -49,7 +51,7 @@ namespace DriveNow.Handlier
 
                     var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
 
-                    if (user.Email == command.SingInModel.Email && user.Password == hashedPassword)
+                    if (user.Email == command.SingInModel.EmailOrNumber && user.Password == hashedPassword)
                     {
                         var token = GenerateToken(user);
 
@@ -58,12 +60,9 @@ namespace DriveNow.Handlier
                 }
             }
 
-            else if (command.SingInModel.Number != null)
+            else if (Number != null)
             {
-
-                var user_entity = await _context.users.FirstOrDefaultAsync(x => x.Email == command.SingInModel.Email);
-
-                var user = _mapper.Map<User, UserModel>(user_entity);
+                var user = _mapper.Map<User, UserModel>(Number);
 
                 if (user != null)
                 {
@@ -73,7 +72,7 @@ namespace DriveNow.Handlier
 
                     var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
 
-                    if (user.Number == command.SingInModel.Number && user.Password == hashedPassword)
+                    if (user.Number == command.SingInModel.EmailOrNumber && user.Password == hashedPassword)
                     {
                         var token = GenerateToken(user);
 

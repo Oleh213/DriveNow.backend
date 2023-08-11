@@ -41,10 +41,8 @@
     <None Remove="Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\" />
     <Folder Include="Context\" />
     <Folder Include="DBContext\" />
-    <Folder Include="Controllers\" />
     <Folder Include="Model\Mapping\" />
     <Folder Include="Services\" />
   </ItemGroup>
