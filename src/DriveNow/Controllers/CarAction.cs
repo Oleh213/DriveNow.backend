@@ -6,6 +6,7 @@ using DriveNow.DTO;
 using DriveNow.Model;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace DriveNow.Controllers
 {
@@ -46,6 +47,35 @@ namespace DriveNow.Controllers
 		public async Task<ResultModel> ChangeCarStatus([FromRoute] Guid carId, CancellationToken cancellationToken)
 		{
 			return await _mediator.Send(new ChangeStatusCommand(UserId, carId), cancellationToken);
+		}
+		
+		[HttpPost("webhook")]
+		public async Task<IActionResult> Index()
+		{
+			const string endpointSecret = "whsec_436a4f330179fd38f5d7b6d374499a12eea08afc1cfc1c881407f4a4a4040791";
+			Console.WriteLine("wer");
+			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+			try
+			{
+				var stripeEvent = EventUtility.ConstructEvent(json,
+					Request.Headers["Stripe-Signature"], endpointSecret);
+				// Handle the event
+				Console.WriteLine(stripeEvent);
+				if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+				{
+					Console.WriteLine("Yes!");
+				}
+				else
+				{
+					Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+				}
+
+				return Ok();
+			}
+			catch (StripeException e)
+			{
+				return BadRequest();
+			}
 		}
     }
 }
