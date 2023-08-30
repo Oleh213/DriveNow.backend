@@ -17,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace DriveNow.Controllers
 {
 	[ApiController]
-	[Route("SingIn")]
+	[Route("SingInController")]
 	public class SingInAction: ControllerBase
 	{
 		private readonly IMediator _mediator;
@@ -28,9 +28,9 @@ namespace DriveNow.Controllers
 		}
 
 		[HttpPost("SingInUser")]
-		public async Task<string> SingIn(SingInModel singInModel, CancellationToken cancellationToken)
+		public async Task<string> SingIn(SingInInputModel singInInputModel, CancellationToken cancellationToken)
 		{
-			return await _mediator.Send(new SingInCommand(singInModel),cancellationToken);
+			return await _mediator.Send(new SingInCommand(singInInputModel),cancellationToken);
 
 		}
 		/*
@@ -41,7 +41,7 @@ namespace DriveNow.Controllers
 		}
 		*/
 		[HttpPost("SingInWithGoogle")]
-		public async Task<string> SingInGoogle([FromBody] GoogleSingInModel test, CancellationToken cancellationToken) {
+		public async Task<string> SingInGoogle([FromBody] GoogleSingInInputModel test, CancellationToken cancellationToken) {
 
 			return await _mediator.Send(new SingInWithGoogleCommand(test),cancellationToken);
 		}

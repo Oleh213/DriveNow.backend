@@ -24,8 +24,10 @@ namespace DriveNow.Context
 		public LanguageEnum? Language { get; set; }
 
 		public Role Role { get; set; }
+		
+		public string? DocumentUrl { get; set; }
 
-		public ICollection<CartItem> CartItems { get; set; }
+		public DocumentStatus? Status { get; set; }
 
 		public ICollection<Order> Orders { get; set; }
 	}
