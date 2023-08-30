@@ -8,9 +8,13 @@ namespace DriveNow.Model.Mapping
 	{
 		public MappingProfile()
 		{
-			CreateMap<User, UserModel>()
-				.ForMember(dst => dst.FirstName, opt => opt.MapFrom(src => src.FirstName));
+			CreateMap<Order, ShowUserOrderOutputModel>()
+				.ForMember(dst => dst.OrderId, opt => opt.MapFrom(src => src.OrderId))
+				.ForMember(dst => dst.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice))
+				.ForMember(dst => dst.OrderTime, opt => opt.MapFrom(src => src.OrderTime))
+				.ForMember(dst => dst.Promocode, opt => opt.MapFrom(src => src.Promocode))
+				.ForMember(dst => dst.Car, opt => opt.MapFrom(src => src.Car));
+
 		}
 	}
 }
-

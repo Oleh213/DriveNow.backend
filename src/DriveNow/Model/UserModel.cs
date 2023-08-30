@@ -24,6 +24,10 @@ namespace DriveNow.Model
         public LanguageEnum? Language { get; set; }
 
         public Role Role { get; set; }
+        
+        public string? DocumentUrl { get; set; }
+
+        public DocumentStatus? Status { get; set; }
     }
 }
 

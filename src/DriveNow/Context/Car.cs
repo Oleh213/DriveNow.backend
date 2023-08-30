@@ -28,6 +28,8 @@ namespace DriveNow.Context
 		public string About { get; set; }
 
 		public string Address { get; set; }
+		
+		public string PowerReserve { get; set; }
 
         public string AccualFileUrl { get; set; }
 
@@ -35,5 +37,7 @@ namespace DriveNow.Context
 		
 		public Free Free { get; set; }
 		public Catogory Catogories { get; set; }
-    }
+		
+		public ICollection<Order> Orders { get; set; }
+	}
 }

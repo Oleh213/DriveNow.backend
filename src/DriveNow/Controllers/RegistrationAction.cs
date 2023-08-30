@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DriveNow.Controllers
 {
 	[ApiController]
-	[Route("RegistrationAction")]
+	[Route("RegistrationController")]
 	public class RegistrationAction : ControllerBase
 	{
 
@@ -33,9 +33,9 @@ namespace DriveNow.Controllers
         }
 
 		[HttpPost("Registration")]
-		public async Task<string> Registration(RegistrationModel registrationModel,CancellationToken cancellationToken) {
+		public async Task<string> Registration(NewUserInputModel newUserInputModel,CancellationToken cancellationToken) {
 
-			return await _mediator.Send(new RegistrationCommand(registrationModel), cancellationToken);
+			return await _mediator.Send(new RegistrationCommand(newUserInputModel), cancellationToken);
         }
     }			
 }

@@ -69,6 +69,10 @@ namespace DriveNow.Migrations
                     b.Property<int>("Power")
                         .HasColumnType("int");
 
+                    b.Property<string>("PowerReserve")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
@@ -81,31 +85,6 @@ namespace DriveNow.Migrations
                     b.HasIndex("CategoryForId");
 
                     b.ToTable("cars");
-                });
-
-            modelBuilder.Entity("DriveNow.Context.CartItem", b =>
-                {
-                    b.Property<Guid>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("CartItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("cartItems");
                 });
 
             modelBuilder.Entity("DriveNow.Context.Catogory", b =>
@@ -129,9 +108,11 @@ namespace DriveNow.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("OrderTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("CarId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("OrderTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Promocode")
                         .IsRequired()
@@ -145,37 +126,11 @@ namespace DriveNow.Migrations
 
                     b.HasKey("OrderId");
 
+                    b.HasIndex("CarId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("orders");
-                });
-
-            modelBuilder.Entity("DriveNow.Context.OrderItem", b =>
-                {
-                    b.Property<Guid>("OrderItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("OrderItemId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("orderItems");
                 });
 
             modelBuilder.Entity("DriveNow.Context.Promocode", b =>
@@ -205,6 +160,9 @@ namespace DriveNow.Migrations
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DocumentUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -231,6 +189,9 @@ namespace DriveNow.Migrations
                     b.Property<int?>("Sex")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId");
 
                     b.ToTable("users");
@@ -247,37 +208,28 @@ namespace DriveNow.Migrations
                     b.Navigation("Catogories");
                 });
 
-            modelBuilder.Entity("DriveNow.Context.CartItem", b =>
+            modelBuilder.Entity("DriveNow.Context.Order", b =>
                 {
-                    b.HasOne("DriveNow.Context.User", "User")
-                        .WithMany("CartItems")
-                        .HasForeignKey("UserId")
+                    b.HasOne("DriveNow.Context.Car", "Car")
+                        .WithMany("Orders")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DriveNow.Context.Order", b =>
-                {
                     b.HasOne("DriveNow.Context.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Car");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DriveNow.Context.OrderItem", b =>
+            modelBuilder.Entity("DriveNow.Context.Car", b =>
                 {
-                    b.HasOne("DriveNow.Context.Order", "Order")
-                        .WithMany("OrderItem")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("DriveNow.Context.Catogory", b =>
@@ -285,15 +237,8 @@ namespace DriveNow.Migrations
                     b.Navigation("Cars");
                 });
 
-            modelBuilder.Entity("DriveNow.Context.Order", b =>
-                {
-                    b.Navigation("OrderItem");
-                });
-
             modelBuilder.Entity("DriveNow.Context.User", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618

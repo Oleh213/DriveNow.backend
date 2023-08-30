@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DriveNow.Controllers
 {
 	[ApiController]
-	[Route("PromocodeAction")]
+	[Route("PromocodeController")]
 	public class PromocodeAction: ControllerBase
 	{
         private IMediator _mediator;
@@ -21,16 +21,16 @@ namespace DriveNow.Controllers
 
         //private Guid UserId => Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public Guid UserId = Guid.Parse("38d5f673-5834-4c0b-bc21-5714a4a1fe27");
+        public Guid UserId = Guid.Parse("9500269c-df16-48f7-a7cf-003cb79fd0ed");
 
         [HttpPost("AddPromocode")]
-		public async Task<string> AddPromocode(PromocodeModel model, CancellationToken cancellationToken)
+		public async Task<string> AddPromocode(NewPromocodeInputModel inputModel, CancellationToken cancellationToken)
 		{
-			return await _mediator.Send(new PromocodeCommand(model, UserId), cancellationToken);
+			return await _mediator.Send(new PromocodeCommand(inputModel, UserId), cancellationToken);
 		}
 
 		[HttpGet("ShowAllPromocode")]
-		public async Task<List<Promocode>> ShowAllPromocode(CancellationToken cancellationToken)
+		public async Task<List<PromocodeModel>> ShowAllPromocode(CancellationToken cancellationToken)
 		{
 			return await _mediator.Send(new ShowPromocodesCommand(UserId), cancellationToken);
 		}

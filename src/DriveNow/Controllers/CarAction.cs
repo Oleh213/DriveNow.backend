@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DriveNow.Controllers
 {
 	[ApiController]
-	[Route("CarAction")]
+	[Route("CarController")]
 	public class CarAction: ControllerBase
 	{
         private IMediator _mediator;
@@ -21,22 +21,22 @@ namespace DriveNow.Controllers
 		}
         //private Guid UserId => Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
-        public Guid UserId = Guid.Parse("41122ab2-ddcd-4dc1-8860-0492520a58e4");
+        public Guid UserId = Guid.Parse("9500269c-df16-48f7-a7cf-003cb79fd0ed");
 
         [HttpPost("AddCar")]
-		public async Task<string> AddCar([FromForm] CarModel model, CancellationToken cancellationToken)
+		public async Task<string> AddCar([FromForm] NewCarInputModel inputModel, CancellationToken cancellationToken)
 		{
-			return await _mediator.Send(new CarCommand(model,UserId), cancellationToken);
+			return await _mediator.Send(new CarCommand(inputModel,UserId), cancellationToken);
 		}
 
 		[HttpGet("ShowAllCars")]
-		public async Task<List<Car>> ShowAllCars (CancellationToken cancellationToken)
+		public async Task<List<CarModel>> ShowAllCars (CancellationToken cancellationToken)
         {
             return await _mediator.Send(new ShowAllCarsCommand(UserId), cancellationToken);
         }
 
 		[HttpGet("ShowCarsForMap")]
-		public async Task<List<ShowCarForMapDTO>> ShowCarsForMap(CancellationToken cancellationToken)
+		public async Task<List<CarMapModel>> ShowCarsForMap(CancellationToken cancellationToken)
 		{
 			return await _mediator.Send(new ShowCarForMapCommand(UserId), cancellationToken);
 		}
