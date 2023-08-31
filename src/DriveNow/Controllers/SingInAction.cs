@@ -21,15 +21,12 @@ namespace DriveNow.Controllers
 		public ShopContext _context;
 
 		private readonly IOptions<AuthOptions> options;
-
-		private readonly ILogger<string> _logger;
-
 		
-		public SingInAction(ShopContext context, IOptions<AuthOptions> options,ILogger<string> logger)
+		
+		public SingInAction(ShopContext context, IOptions<AuthOptions> options)
 		{
 			_context = context;
 			this.options = options;
-			_logger = logger;
 		}
 
 		[HttpPost("SingInUser")]
@@ -166,9 +163,8 @@ namespace DriveNow.Controllers
 			try
 			{
 				var stripeEvent = EventUtility.ParseEvent(json);
-				
-				_logger.LogDebug(json);
 
+				Console.WriteLine(stripeEvent);
 				// Handle the event
 				if (stripeEvent.Type == Events.PaymentIntentSucceeded)
 				{
@@ -192,7 +188,6 @@ namespace DriveNow.Controllers
 			}
 			catch (StripeException e)
 			{
-				_logger.LogError(e.ToString());
 				return BadRequest();
 			}
 		}
