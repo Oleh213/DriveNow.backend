@@ -168,8 +168,7 @@ namespace DriveNow.Controllers
             try
             {
 	            var stripeEvent = EventUtility.ConstructEvent(json,
-		            Request.Headers["Stripe-Signature"], "whsec_TKx6gm3O09mXM2RRHMPxDZq4Dk44CLPm"
-		            );
+		            Request.Headers["Stripe-Signature"], "whsec_7v6Rr9mARlvSwu7BhJou8BrLTszYxjGv");
 
 	            _logger.LogInformation("Yes: " + stripeEvent);
 	            // Handle the event
