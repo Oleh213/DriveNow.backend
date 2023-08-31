@@ -157,29 +157,35 @@ namespace DriveNow.Controllers
 		
 		const string endpointSecret = "whsec_436a4f330179fd38f5d7b6d374499a12eea08afc1cfc1c881407f4a4a4040791";
 
-		[HttpPost("webhook")]
-		public async Task<IActionResult> Index()
-		{
-			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-			try
-			{
-				var stripeEvent = EventUtility.ConstructEvent(json,
-					Request.Headers["Stripe-Signature"], endpointSecret);
+        [HttpPost]
+        public async Task<IActionResult> Index()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            try
+            {
+	            var stripeEvent = EventUtility.ConstructEvent(json,
+		            Request.Headers["Stripe-Signature"], endpointSecret);
 
-				// Handle the event
-				Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+	            // Handle the event
+	            if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+	            {
+		            Console.WriteLine(stripeEvent);
 
-				return Ok();
-			}
-			catch (StripeException e)
-			{
-				return BadRequest();
-			}
-		}
+		            return Ok();
+	            }
+	            // ... handle other event types
+	            else
+	            {
+		            Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+
+		            return NoContent();
+	            }
+            }
+            catch (StripeException e)
+            {
+                return Unauthorized();
+            }
+        }
 		
 	}
-	public interface ILogger<out TCategoryName> : ILogger
-    {
-
-    }
 }
