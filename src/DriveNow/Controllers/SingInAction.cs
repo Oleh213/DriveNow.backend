@@ -157,7 +157,6 @@ namespace DriveNow.Controllers
 			return BadRequest("Finished");
 		}
 		
-		const string endpointSecret = "whsec_436a4f330179fd38f5d7b6d374499a12eea08afc1cfc1c881407f4a4a4040791";
 
         [HttpPost]
         public async Task<IActionResult> Index()
@@ -169,7 +168,8 @@ namespace DriveNow.Controllers
             try
             {
 	            var stripeEvent = EventUtility.ConstructEvent(json,
-		            Request.Headers["Stripe-Signature"], endpointSecret);
+		            Request.Headers["Stripe-Signature"], "we_1Nl4wYL84FHcCE3RJ4JZGSRE"
+		            );
 
 	            _logger.LogInformation("Yes: " + stripeEvent);
 	            // Handle the event
