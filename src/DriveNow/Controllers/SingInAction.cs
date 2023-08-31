@@ -21,7 +21,8 @@ namespace DriveNow.Controllers
 		public ShopContext _context;
 
 		private readonly IOptions<AuthOptions> options;
-		
+		private readonly ILogger<StripeException> _logger;
+
 		
 		public SingInAction(ShopContext context, IOptions<AuthOptions> options)
 		{
@@ -183,6 +184,7 @@ namespace DriveNow.Controllers
             }
             catch (StripeException e)
             {
+	            _logger.LogInformation("Error: " + e);
                 return Unauthorized();
             }
         }
