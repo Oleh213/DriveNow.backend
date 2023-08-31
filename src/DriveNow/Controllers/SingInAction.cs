@@ -167,9 +167,9 @@ namespace DriveNow.Controllers
             _logger.LogInformation("json: " + json);
             var jsonObject = JObject.Parse(json);
 
-            var shopId = Guid.Parse((string)jsonObject["metadata"]["ShopId"]);
+            var shopId = Guid.Parse((string)jsonObject["data"]["object"]["metadata"]["ShopId"]);
             
-            var customerServiceRequestId = Guid.Parse((string)jsonObject["metadata"]["CustomerServiceRequestId"]);
+            var customerServiceRequestId = Guid.Parse((string)jsonObject["data"]["object"]["metadata"]["CustomerServiceRequestId"]);
 
             _logger.LogInformation("------  shopId: " + shopId + "customerServiceRequestId : " + customerServiceRequestId + "-----");
 
