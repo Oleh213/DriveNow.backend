@@ -159,7 +159,7 @@ namespace DriveNow.Controllers
 		}
 		
 
-        [HttpPost]
+        [HttpPost("webhook")]
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
@@ -176,7 +176,7 @@ namespace DriveNow.Controllers
             try
             {
 	            var stripeEvent = EventUtility.ConstructEvent(json,
-		            Request.Headers["Stripe-Signature"], "whsec_7v6Rr9mARlvSwu7BhJou8BrLTszYxjGv");
+		            Request.Headers["Stripe-Signature"], "whsec_AhxMnjThxXG8v6etwLibCd1eRjsRKg7Y");
 
 	            _logger.LogInformation("Yes: " + stripeEvent);
 	            // Handle the event
