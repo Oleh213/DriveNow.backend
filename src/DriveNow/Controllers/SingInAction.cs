@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using Stripe;
 
 namespace DriveNow.Controllers
@@ -164,6 +165,13 @@ namespace DriveNow.Controllers
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             
             _logger.LogInformation("json: " + json);
+            var jsonObject = JObject.Parse(json);
+
+            var shopId = Guid.Parse((string)jsonObject["metadata"]["ShopId"]);
+            
+            var customerServiceRequestId = Guid.Parse((string)jsonObject["metadata"]["CustomerServiceRequestId"]);
+
+            _logger.LogInformation("------  shopId: " + shopId + "customerServiceRequestId : " + customerServiceRequestId + "-----");
 
             try
             {
