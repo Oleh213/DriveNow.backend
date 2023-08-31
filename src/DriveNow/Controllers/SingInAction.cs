@@ -24,10 +24,11 @@ namespace DriveNow.Controllers
 		private readonly ILogger<StripeException> _logger;
 
 		
-		public SingInAction(ShopContext context, IOptions<AuthOptions> options)
+		public SingInAction(ShopContext context, IOptions<AuthOptions> options, ILogger<StripeException> logger)
 		{
 			_context = context;
 			this.options = options;
+			_logger = logger;
 		}
 
 		[HttpPost("SingInUser")]
