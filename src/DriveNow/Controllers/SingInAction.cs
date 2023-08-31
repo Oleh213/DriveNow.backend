@@ -155,35 +155,20 @@ namespace DriveNow.Controllers
 			return BadRequest("Finished");
 		}
 		
+		const string endpointSecret = "whsec_436a4f330179fd38f5d7b6d374499a12eea08afc1cfc1c881407f4a4a4040791";
+
 		[HttpPost("webhook")]
 		public async Task<IActionResult> Index()
 		{
 			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-
 			try
 			{
-				var stripeEvent = EventUtility.ParseEvent(json);
+				var stripeEvent = EventUtility.ConstructEvent(json,
+					Request.Headers["Stripe-Signature"], endpointSecret);
 
-				Console.WriteLine(stripeEvent);
 				// Handle the event
-				if (stripeEvent.Type == Events.PaymentIntentSucceeded)
-				{
-					var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-					// Then define and call a method to handle the successful payment intent.
-					// handlePaymentIntentSucceeded(paymentIntent);
-				}
-				else if (stripeEvent.Type == Events.PaymentMethodAttached)
-				{
-					var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
-					// Then define and call a method to handle the successful attachment of a PaymentMethod.
-					// handlePaymentMethodAttached(paymentMethod);
-				}
-				// ... handle other event types
-				else
-				{
-					// Unexpected event type
-					Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
-				}
+				Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+
 				return Ok();
 			}
 			catch (StripeException e)
