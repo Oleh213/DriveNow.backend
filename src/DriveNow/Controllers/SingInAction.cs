@@ -21,10 +21,10 @@ namespace DriveNow.Controllers
 		public ShopContext _context;
 
 		private readonly IOptions<AuthOptions> options;
-		private readonly ILogger<StripeException> _logger;
+		private readonly ILogger<SingInAction> _logger;
 
 		
-		public SingInAction(ShopContext context, IOptions<AuthOptions> options, ILogger<StripeException> logger)
+		public SingInAction(ShopContext context, IOptions<AuthOptions> options, ILogger<SingInAction> logger)
 		{
 			_context = context;
 			this.options = options;
@@ -163,11 +163,15 @@ namespace DriveNow.Controllers
         public async Task<IActionResult> Index()
         {
             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            
+            _logger.LogInformation("json: " + json);
+
             try
             {
 	            var stripeEvent = EventUtility.ConstructEvent(json,
 		            Request.Headers["Stripe-Signature"], endpointSecret);
 
+	            _logger.LogInformation("Yes: " + stripeEvent);
 	            // Handle the event
 	            if (stripeEvent.Type == Events.PaymentIntentSucceeded)
 	            {
