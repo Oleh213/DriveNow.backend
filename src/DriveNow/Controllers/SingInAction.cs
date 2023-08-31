@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 
 namespace DriveNow.Controllers
 {
@@ -20,11 +21,15 @@ namespace DriveNow.Controllers
 		public ShopContext _context;
 
 		private readonly IOptions<AuthOptions> options;
+
+		private readonly ILogger<string> _logger;
+
 		
-		public SingInAction(ShopContext context, IOptions<AuthOptions> options)
+		public SingInAction(ShopContext context, IOptions<AuthOptions> options,ILogger<string> logger)
 		{
 			_context = context;
 			this.options = options;
+			_logger = logger;
 		}
 
 		[HttpPost("SingInUser")]
@@ -150,8 +155,51 @@ namespace DriveNow.Controllers
 
 				return Ok("Successful!");
             }
-
 			return BadRequest("Finished");
 		}
+		
+		[HttpPost("webhook")]
+		public async Task<IActionResult> Index()
+		{
+			var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+			try
+			{
+				var stripeEvent = EventUtility.ParseEvent(json);
+				
+				_logger.LogDebug(json);
+
+				// Handle the event
+				if (stripeEvent.Type == Events.PaymentIntentSucceeded)
+				{
+					var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+					// Then define and call a method to handle the successful payment intent.
+					// handlePaymentIntentSucceeded(paymentIntent);
+				}
+				else if (stripeEvent.Type == Events.PaymentMethodAttached)
+				{
+					var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
+					// Then define and call a method to handle the successful attachment of a PaymentMethod.
+					// handlePaymentMethodAttached(paymentMethod);
+				}
+				// ... handle other event types
+				else
+				{
+					// Unexpected event type
+					Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+				}
+				return Ok();
+			}
+			catch (StripeException e)
+			{
+				_logger.LogError(e.ToString());
+				return BadRequest();
+			}
+		}
+		
 	}
+	public interface ILogger<out TCategoryName> : ILogger
+    {
+
+    }
 }
