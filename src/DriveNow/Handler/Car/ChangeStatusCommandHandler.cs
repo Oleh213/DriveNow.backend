@@ -31,7 +31,6 @@ public class ChangeStatusCommandHandler: IRequestHandler<ChangeStatusCommand, Re
 
             if (car_check != null)
             {
-                // Update the status directly on the entity retrieved from the same context
                 car_check.Free = Free.No;
 
                 await _context.SaveChangesAsync();
@@ -43,15 +42,12 @@ public class ChangeStatusCommandHandler: IRequestHandler<ChangeStatusCommand, Re
             }
             else
             {
-                return null; // Handle case where car is not found
+                return null;
             }
         }
         else
         {
-            return null; // Handle case where user is not found
+            return null; 
         }
     }
-
-
-
 }
