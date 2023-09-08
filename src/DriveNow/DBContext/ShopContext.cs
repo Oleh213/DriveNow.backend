@@ -21,6 +21,8 @@ namespace DriveNow.DBContext
 		public DbSet<Promocode> promocodes { get; set; }
 		
 		public DbSet<Order> orders { get; set; }
+		
+		public DbSet<Trip> trips { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +53,8 @@ namespace DriveNow.DBContext
 			modelBuilder.Entity<Catogory>().HasKey(s => new { s.CategoryId });
 
 			modelBuilder.Entity<Order>().HasKey(s => new { s.OrderId });
+
+			modelBuilder.Entity<Trip>().HasKey(s => new { s.TripId });
 
 			modelBuilder.Entity<Promocode>().HasKey(s => new { s.PromocodeId });
         }

@@ -22,20 +22,11 @@ namespace DriveNow.Handler
 
 		public async Task<List<CarModel>> Handle(ShowAllCarsCommand command, CancellationToken cancellationToken)
 		{
-			var user_ckeck = await _context.users.FirstOrDefaultAsync(Userid => Userid.UserId == command.UserId);
-
-			if (user_ckeck != null)
-			{
-				var cars = await _context.cars.ToListAsync();
+			var cars = await _context.cars.ToListAsync();
 				
-				var result = cars.Select(car => _mapper.Map<CarModel>(car)).ToList();
+			var result = cars.Select(car => _mapper.Map<CarModel>(car)).ToList();
 
-				return result;
-			}
-			else
-			{
-				return null;
-			}
+			return result;
 		}
 	}
 }
