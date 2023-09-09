@@ -12,8 +12,6 @@ using DriveNow.Enums;
 using DriveNow.Model;
 using DriveNow.Services;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace DriveNow.Handler
