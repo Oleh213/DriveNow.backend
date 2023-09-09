@@ -2,6 +2,13 @@
 using DriveNow.DBContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using DriveNow.Controllers;
+using System.Reflection;
+using DriveNow.Services;
+using DriveNow.Handlier;
 
 internal class Program
 {
@@ -27,8 +34,12 @@ internal class Program
                 }).Build();
             });
         });
+        builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    );
+        builder.Services.AddControllers(
+            options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
-        builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
         var authOptionConfiguration = builder.Configuration.GetSection("Auth");
@@ -59,15 +70,22 @@ internal class Program
     }
     );
 
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddDbContext<ShopContext>(option =>
-        {
-            option.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"));
-        });
 
-        
+        builder.Services.AddScoped<IStorageService, StorageService>();
+
+
+        builder.Services.AddDbContext<ShopContext>(option =>
+            option.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"))
+        );
+
+        builder.Services.AddTransient<ShopContext>();
+
+        builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
         var app = builder.Build();
 

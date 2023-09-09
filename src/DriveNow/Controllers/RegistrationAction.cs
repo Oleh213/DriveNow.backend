@@ -1,77 +1,41 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using DriveNow.Commands;
 using DriveNow.Context;
 using DriveNow.DBContext;
 using DriveNow.Model;
+using DriveNow.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DriveNow.Controllers
 {
 	[ApiController]
-	[Route("RegistrationAction")]
+	[Route("RegistrationController")]
 	public class RegistrationAction : ControllerBase
 	{
 
 		public ShopContext _context;
 
-		public RegistrationAction(ShopContext context)
+        private IMediator _mediator;
+        private IConfiguration _config;
+        private IStorageService _storageService;
+
+        public RegistrationAction(ShopContext context, IMediator mediator, IConfiguration config, IStorageService storageService)
 		{
 			_context = context;
-		}
+			_mediator = mediator;
+            _config = config;
+            _storageService = storageService;
+
+        }
 
 		[HttpPost("Registration")]
-		public async Task<IActionResult> Registration(RegistrationModel registrationModel) {
+		public async Task<string> Registration(NewUserInputModel newUserInputModel,CancellationToken cancellationToken) {
 
-			if (registrationModel.Number != null) {
-
-				var user = await _context.users.FirstOrDefaultAsync(x=>x.Number == registrationModel.Number);
-
-				var sha = SHA256.Create();
-
-				var asByteArray = Encoding.Default.GetBytes(registrationModel.Password);
-
-                var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-
-                _context.users.Add(new User
-			{
-				UserId = Guid.NewGuid(),
-				FirstName = registrationModel.FirstName,
-				SecondName = registrationModel.SecondName,
-				Number = registrationModel.Number,
-				Password = hashedPassword
-			});
-
-				await _context.SaveChangesAsync();
-
-				return Ok("Successful");
-			}
-
-			else if (registrationModel.Email != null) {
-
-				var user = await _context.users.FirstOrDefaultAsync(x => x.Email == registrationModel.Email);
-
-				var sha = SHA256.Create();
-
-				var asByteArray = Encoding.Default.GetBytes(registrationModel.Password);
-
-				var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-
-				_context.users.Add(new User
-                {
-					UserId = Guid.NewGuid(),
-                    FirstName = registrationModel.FirstName,
-                    SecondName = registrationModel.SecondName,
-                    Email = registrationModel.Email,
-                    Password = hashedPassword
-                });
-
-				await _context.SaveChangesAsync();
-
-				return Ok("Successful!");
-            }
-			return Ok("Finish");
+			return await _mediator.Send(new RegistrationCommand(newUserInputModel), cancellationToken);
         }
-	}			
+    }			
 }

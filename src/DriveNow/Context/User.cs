@@ -1,4 +1,6 @@
 ﻿using System;
+using DriveNow.Enums;
+
 namespace DriveNow.Context
 {
 	public class User
@@ -20,15 +22,13 @@ namespace DriveNow.Context
 		public SexEnum? Sex { get; set; }
 
 		public LanguageEnum? Language { get; set; }
-	}
 
-	public enum SexEnum {
-		Male,
-		Female
-	}
+		public Role Role { get; set; }
+		
+		public string? DocumentUrl { get; set; }
 
-	public enum LanguageEnum {
-		Ukrainian,
-		English
+		public DocumentStatus? Status { get; set; }
+
+		public ICollection<Order> Orders { get; set; }
 	}
 }
