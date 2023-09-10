@@ -3,9 +3,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using DriveNow.Commands;
 using DriveNow.Context;
 using DriveNow.DBContext;
 using DriveNow.Model;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -31,175 +33,30 @@ namespace DriveNow.Controllers
 			this.options = options;
 			_logger = logger;
 		}
+		private readonly IMediator _mediator;
+		 
+		public SingInAction(IMediator mediator)
+		{
+			_mediator = mediator;
+		}
 
 		[HttpPost("SingInUser")]
-		public async Task<IActionResult> SingIn(SingInModel singInModel){
+		public async Task<string> SingIn(SingInInputModel singInInputModel, CancellationToken cancellationToken)
+		{
+			return await _mediator.Send(new SingInCommand(singInInputModel),cancellationToken);
 
-			if (singInModel.Email != null)
-			{
-
-				var user = await _context.users.FirstOrDefaultAsync(x => x.Email == singInModel.Email);
-
-				if (user != null)
-				{
-
-
-					var sha = SHA256.Create();
-
-					var asByteArray = Encoding.Default.GetBytes(singInModel.Password);
-
-					var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-
-					if (user.Email == singInModel.Email && user.Password == hashedPassword)
-					{
-						var token = GenerateToken(user);
-
-						return Ok(new {
-							access_token = token
-						}) ;
-					}
-				}
-				else {
-					return BadRequest("Bad!");
-				}
-			}
-
-			else if (singInModel.Number != null)
-			{
-
-				var user = await _context.users.FirstOrDefaultAsync(x => x.Number == singInModel.Number);
-
-				if (user != null)
-				{
-					var sha = SHA256.Create();
-
-					var asByteArray = Encoding.Default.GetBytes(singInModel.Password);
-
-					var hashedPassword = Convert.ToBase64String(sha.ComputeHash(asByteArray));
-
-					if (user.Number == singInModel.Number && user.Password == hashedPassword)
-					{
-
-                        var token = GenerateToken(user);
-
-                        return Ok(new
-                        {
-                            access_token = token
-                        });
-                    }
-				}
-				else {
-					return BadRequest("Bad!");
-				}
-			}
-			return Ok("Finished!");
 		}
-		[HttpPost("Token")]
-		public string GenerateToken(User user) {
-
-			var authParams = options.Value;
-
-			var securityKey = authParams.GetSymmetricSecurityKey();
-
-			var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-			var claims = new List<Claim>()
-			{
-				new Claim (JwtRegisteredClaimNames.Name, user.SecondName),
-				new Claim (JwtRegisteredClaimNames.Sub, user.UserId.ToString())
-			};
-
-			var token = new JwtSecurityToken(authParams.Issuer,
-				authParams.Audience,
-				claims,
-                expires: DateTime.Now.AddSeconds(authParams.TokenLifeTime),
-                signingCredentials: credentials);
-
-			return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
+		/*
 		[HttpGet("ShowAllUsers")]
 		public async Task<IActionResult> ShowAllUsers() {
 
 			return Ok(_context.users);
 		}
-
+		*/
 		[HttpPost("SingInWithGoogle")]
+		public async Task<string> SingInGoogle([FromBody] GoogleSingInInputModel test, CancellationToken cancellationToken) {
 
-		public async Task<IActionResult> SingInGoogle(GoogleSingInModel googleSingInModel) {
-
-			var user = await _context.users.FirstOrDefaultAsync(x => x.Email == googleSingInModel.Email);
-
-			if (user != null) {
-
-				var token = GenerateToken(user);
-
-				return Ok(new
-				{
-
-					access_token = token
-				});
-			}
-
-			else if (user == null) {
-
-                _context.users.Add(new User
-                {
-                    UserId = Guid.NewGuid(),
-                    FirstName = googleSingInModel.FirstName,
-                    SecondName = googleSingInModel.SecondName,
-                    Email = googleSingInModel.Email
-                });
-
-				await _context.SaveChangesAsync();
-
-				return Ok("Successful!");
-            }
-			return BadRequest("Finished");
+			return await _mediator.Send(new SingInWithGoogleCommand(test),cancellationToken);
 		}
-		
-
-        [HttpPost("webhook")]
-        public async Task<IActionResult> Index()
-        {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-            
-            _logger.LogInformation("json: " + json);
-            var jsonObject = JObject.Parse(json);
-
-            var shopId = (Guid)jsonObject["data"]["object"]["metadata"]["ShopId"];
-            
-            var customerServiceRequestId = (Guid)jsonObject["data"]["object"]["metadata"]["CustomerServiceRequestId"];
-
-            _logger.LogInformation("------  shopId: " + shopId.GetType() + "customerServiceRequestId : " + customerServiceRequestId.GetType() + "-----");
-
-            try
-            {
-	            var stripeEvent = EventUtility.ConstructEvent(json,
-		            Request.Headers["Stripe-Signature"], "whsec_AhxMnjThxXG8v6etwLibCd1eRjsRKg7Y");
-
-	            _logger.LogInformation("Yes: " + stripeEvent);
-	            // Handle the event
-	            if (stripeEvent.Type == Events.PaymentIntentSucceeded)
-	            {
-		            Console.WriteLine(stripeEvent);
-
-		            return Ok();
-	            }
-	            // ... handle other event types
-	            else
-	            {
-		            Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
-
-		            return NoContent();
-	            }
-            }
-            catch (StripeException e)
-            {
-	            _logger.LogInformation("Error: " + e);
-                return Unauthorized();
-            }
-        }
-		
 	}
 }

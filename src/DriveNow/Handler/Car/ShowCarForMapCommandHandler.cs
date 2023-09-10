@@ -5,7 +5,6 @@ using DriveNow.DBContext;
 using DriveNow.DTO;
 using DriveNow.Enums;
 using DriveNow.Model;
-using GoogleMaps.LocationServices;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
