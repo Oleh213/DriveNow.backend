@@ -67,7 +67,7 @@ public class OrderAction : ControllerBase
             Version = 3,
             PublicKey = publicKey,
             ResultUrl = "http://localhost:4200/map-car",
-            ServerUrl = "https://www.liqpay.ua/api/request"
+            ServerUrl = ""
         };
 
         var liqPayClient = new LiqPayClient(publicKey, privateKey);
