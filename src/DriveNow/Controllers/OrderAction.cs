@@ -79,8 +79,8 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback([FromBody]LiqPayModel model, CancellationToken cancellationToken)
+    public async Task<string> Callback(string Data, string Signature, CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new LiqPayCallbackCommand(model,UserId), cancellationToken);
+        return await _mediator.Send(new LiqPayCallbackCommand(Data,Signature,UserId), cancellationToken);
     }
 }
