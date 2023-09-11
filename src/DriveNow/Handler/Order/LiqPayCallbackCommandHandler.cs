@@ -24,7 +24,7 @@ public class LiqPayCallbackCommandHandler: IRequestHandler<LiqPayCallbackCommand
 
     public async Task<string> Handle(LiqPayCallbackCommand command, CancellationToken cancellationToken)
     {
-        if (IsValidSignature(command._Model.Data, command._Model.Signature))
+        if (IsValidSignature(command.Data, command.Signature))
         {
             var trip_check = await _context.trips.FirstOrDefaultAsync(user => user.UserId == command._UserId);
 
@@ -43,7 +43,7 @@ public class LiqPayCallbackCommandHandler: IRequestHandler<LiqPayCallbackCommand
     {
         using (SHA1 sha1 = SHA1.Create())
         {
-            var computedSignatureBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(publicKey + data + privateKey));
+            var computedSignatureBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(privateKey + data + privateKey));
             var computedSignature = Convert.ToBase64String(computedSignatureBytes);
             return computedSignature == signature;
         }
