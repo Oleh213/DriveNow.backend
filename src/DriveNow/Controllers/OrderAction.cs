@@ -4,6 +4,7 @@ using System.Text;
 using System.Web;
 using DriveNow.Commands;
 using DriveNow.Context;
+using DriveNow.DBContext;
 using DriveNow.DTO;
 using DriveNow.Model;
 using LiqPay.SDK;
@@ -12,6 +13,7 @@ using LiqPay.SDK.Dto.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DriveNow.Controllers;
 
@@ -27,13 +29,15 @@ public class OrderAction : ControllerBase
         { "private_key", "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7" }
     };
 
-    public OrderAction(IMediator mediator)
+    public OrderAction(IMediator mediator, ShopContext context)
     {
         _mediator = mediator;
+        _context = context;
     }
     //private Guid UserId => Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
     public Guid UserId = Guid.Parse("9500269c-df16-48f7-a7cf-003cb79fd0ed");
+    private ShopContext _context;
 
     [HttpPost("CreateOrder")]
 
@@ -96,6 +100,12 @@ public class OrderAction : ControllerBase
             // Get the data and signature from the POST request
             var requestData = Request.Form["data"];
             var providedSignature = Request.Form["signature"];
+            
+            var trip_check = await _context.trips.FirstOrDefaultAsync(user => user.UserId == UserId);
+
+            trip_check.Status = !trip_check.Status;
+            
+            await _context.SaveChangesAsync();
 
             // Calculate the expected signature
             var calculatedSignature = CalculateSignature(privateKey, requestData);
@@ -116,7 +126,7 @@ public class OrderAction : ControllerBase
         }
         catch
         {
-            return null;
+            return "null";
         }
     } 
     private string CalculateSignature(string privateKey, string data)
