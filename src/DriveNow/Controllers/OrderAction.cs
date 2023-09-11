@@ -79,8 +79,53 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback([FromQuery] string data,string signature, CancellationToken cancellationToken)
+    public async Task<string> Callback(CancellationToken cancellationToken)
     {
-        return await _mediator.Send(new LiqPayCallbackCommand(data,signature,UserId), cancellationToken);
+        //return await _mediator.Send(new LiqPayCallbackCommand(data,signature,UserId), cancellationToken);
+        
+        var privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
+        try
+        {
+            // Read the POST data
+            string postData;
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                postData = reader.ReadToEnd();
+            }
+
+            // Get the data and signature from the POST request
+            var requestData = Request.Form["data"];
+            var providedSignature = Request.Form["signature"];
+
+            // Calculate the expected signature
+            var calculatedSignature = CalculateSignature(privateKey, requestData);
+
+            // Compare the provided signature with the calculated signature
+            if (providedSignature == calculatedSignature)
+            {
+                // Signatures match, the request is valid
+                // Process the payment and update your application's state
+
+                return ("ok"); // Respond with a success status code
+            }
+            else
+            {
+                // Signatures do not match, the request is invalid
+                return ("Invalid signature");
+            }
+        }
+        catch
+        {
+            return null;
+        }
+    } 
+    private string CalculateSignature(string privateKey, string data)
+        {
+            using (var sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(privateKey)))
+            {
+                var dataBytes = Encoding.UTF8.GetBytes(privateKey + data + privateKey);
+                var hashBytes = sha1.ComputeHash(dataBytes);
+                return Convert.ToBase64String(hashBytes);
+            }
+        }
     }
-}
