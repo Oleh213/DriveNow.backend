@@ -83,51 +83,15 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback(CancellationToken cancellationToken)
+    public async Task<string> Callback([FromBody] LiqPayModel model,CancellationToken cancellationToken)
     {
-        //return await _mediator.Send(new LiqPayCallbackCommand(data,signature,UserId), cancellationToken);
-        
-        var privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
-        try
-        {
-            // Read the POST data
-            string postData;
-            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
-            {
-                postData = reader.ReadToEnd();
-            }
+        var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
 
-            // Get the data and signature from the POST request
-            var requestData = Request.Form["data"];
-            var providedSignature = Request.Form["signature"];
-            
-            var trip_check = await _context.trips.FirstOrDefaultAsync(user => user.UserId == UserId);
+        var result = rider.Select(trip => trip.Status = !trip.Status);
 
-            trip_check.Status = !trip_check.Status;
-            
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-            // Calculate the expected signature
-            var calculatedSignature = CalculateSignature(privateKey, requestData);
-
-            // Compare the provided signature with the calculated signature
-            if (providedSignature == calculatedSignature)
-            {
-                // Signatures match, the request is valid
-                // Process the payment and update your application's state
-
-                return ("ok"); // Respond with a success status code
-            }
-            else
-            {
-                // Signatures do not match, the request is invalid
-                return ("Invalid signature");
-            }
-        }
-        catch
-        {
-            return "null";
-        }
+        return "Okey";
     } 
     private string CalculateSignature(string privateKey, string data)
         {
