@@ -83,7 +83,7 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback([FromForm] string data, [FromForm] string signature,CancellationToken cancellationToken)
+    public async Task<IActionResult> Callback([FromForm] string data, [FromForm] string signature,CancellationToken cancellationToken)
     {
         var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
 
@@ -95,7 +95,7 @@ public class OrderAction : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return "Okey";
+        return Ok("Okey");
     } 
     private string CalculateSignature(string privateKey, string data)
         {
