@@ -83,7 +83,7 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback([FromQuery] string Data, [FromQuery] string Signature,CancellationToken cancellationToken)
+    public async Task<string> Callback([FromForm] string Data, [FromForm] string Signature,CancellationToken cancellationToken)
     {
         var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
 
