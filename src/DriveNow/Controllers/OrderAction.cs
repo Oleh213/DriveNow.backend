@@ -14,7 +14,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 
 namespace DriveNow.Controllers;
 
@@ -84,27 +83,15 @@ public class OrderAction : ControllerBase
 
     [HttpPost("callback")]
 
-    public async Task<string> Callback([FromBody] JObject requestData,CancellationToken cancellationToken)
+    public async Task<string> Callback([FromQuery] string Data, [FromQuery] string Signature,CancellationToken cancellationToken)
     {
-        if (requestData == null)
-        {
-            return ("Invalid request data.");
-        }
-
-        // Extract values from the JObject
-        if (requestData.TryGetValue("data", out JToken dataToken) &&
-            requestData.TryGetValue("signature", out JToken signatureToken))
-        {
-            string data = dataToken.Value<string>();
-            string signature = signatureToken.Value<string>();
-        }
-
         var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
 
         foreach (var trip in rider)
         {
             trip.Status = !trip.Status;
         }
+
 
         await _context.SaveChangesAsync();
 
