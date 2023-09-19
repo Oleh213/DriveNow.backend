@@ -23,12 +23,11 @@ public class OrderAction : ControllerBase
 {
     private readonly IMediator _mediator;
 
-    private readonly Dictionary<string, string> LiqPayCredentials = new Dictionary<string, string>
-    {
-        { "public_key", "sandbox_i21688834201" },
-        { "private_key", "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7" }
-    };
+    private readonly string publicKey = "sandbox_i21688834201";
 
+    private readonly string privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
+    
+    public Guid Id = Guid.NewGuid();
     public OrderAction(IMediator mediator, ShopContext context)
     {
         _mediator = mediator;
@@ -64,7 +63,7 @@ public class OrderAction : ControllerBase
             Email = "email6@example.com",
             Amount = 2000,
             Currency = "UAH",
-            OrderId = Guid.NewGuid().ToString(),
+            OrderId = Id.ToString(),
             Action = LiqPayRequestAction.InvoiceSend,
             Language = LiqPayRequestLanguage.EN,
             Description = "Car Number 213",
@@ -85,19 +84,62 @@ public class OrderAction : ControllerBase
 
     public async Task<IActionResult> Callback([FromForm] string data, [FromForm] string signature,CancellationToken cancellationToken)
     {
-        var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
-
-        foreach (var trip in rider)
+        if (signature == CalculateSignature(data))
         {
-            trip.Status = !trip.Status;
+            string api_url = "https://www.liqpay.ua/api/request";
+            string json = $@"
+        {{
+            ""action"": ""status"",
+            ""version"": 3,
+            ""public_key"": ""{publicKey}"",
+            ""order_id"": ""{Id.ToString()}""
+        }}";
+
+
+            // Encode the JSON data as base64
+            byte[] dataBytes = Encoding.UTF8.GetBytes(json);
+            string DATA = Convert.ToBase64String(dataBytes);
+
+            // Calculate the signature
+            string dataToSign = privateKey + DATA + privateKey;
+            byte[] signatureBytes = System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(dataToSign));
+            string SIGNATURE = Convert.ToBase64String(signatureBytes);
+            using (HttpClient client = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("data", data),
+                    new KeyValuePair<string, string>("signature", signature)
+                });
+
+                HttpResponseMessage response = await client.PostAsync(api_url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    
+                    var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
+
+                    foreach (var trip in rider)
+                    {
+                        trip.Status = !trip.Status;
+                    }
+
+
+                    await _context.SaveChangesAsync();
+
+                    return Ok("Okey");
+                }
+                else
+                {
+                    return BadRequest("Error");
+                }
+            }
         }
 
-
-        await _context.SaveChangesAsync();
-
-        return Ok("Okey");
+        return BadRequest("Error");
     } 
-    private string CalculateSignature(string privateKey, string data)
+    private string CalculateSignature(string data)
         {
             using (var sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(privateKey)))
             {
