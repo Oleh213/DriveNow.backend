@@ -55,8 +55,6 @@ public class OrderAction : ControllerBase
     [HttpPost("create-payment")]
     public async Task<IActionResult> CreatePayment()
     {
-        var publicKey = "sandbox_i21688834201";
-        var privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
 
         var invoiceRequest = new LiqPayRequest
         {
@@ -108,8 +106,8 @@ public class OrderAction : ControllerBase
             {
                 var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("data", data),
-                    new KeyValuePair<string, string>("signature", signature)
+                    new KeyValuePair<string, string>("data", DATA),
+                    new KeyValuePair<string, string>("signature", SIGNATURE)
                 });
 
                 HttpResponseMessage response = await client.PostAsync(api_url, content);
@@ -139,13 +137,20 @@ public class OrderAction : ControllerBase
 
         return BadRequest("Error");
     } 
-    private string CalculateSignature(string data)
+    string CalculateSignature(string data)
+    {
+        // Concatenate private_key, data, and private_key again
+        string concatenatedString = privateKey + data + privateKey;
+
+        // Calculate SHA-1 hash
+        using (SHA1 sha1 = SHA1.Create())
         {
-            using (var sha1 = new HMACSHA1(Encoding.UTF8.GetBytes(privateKey)))
-            {
-                var dataBytes = Encoding.UTF8.GetBytes(privateKey + data + privateKey);
-                var hashBytes = sha1.ComputeHash(dataBytes);
-                return Convert.ToBase64String(hashBytes);
-            }
+            byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(concatenatedString));
+
+            // Convert the hash to base64
+            string signature = Convert.ToBase64String(hashBytes);
+
+            return signature;
         }
+    }
     }
