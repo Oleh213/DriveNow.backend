@@ -1,19 +1,20 @@
+using DriveNow.Model;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DriveNow.Commands;
 
-public class LiqPayCallbackCommand: IRequest<string>
+public class LiqPayCallbackCommand: IRequest<IActionResult>
 {
-    public string Data { get; set; }
     
-    public string Signature { get; set; }
-    
+    public LiqPayModel _model { get; set; }
     public Guid _UserId { get; set; }
 
     public LiqPayCallbackCommand(string data, string signature, Guid UserId)
     {
-        Data = data;
-        Signature = signature;
+        _model = new LiqPayModel();
+        _model.Data = data;
+        _model.Signature = signature;
         _UserId = UserId;
     }
 }
