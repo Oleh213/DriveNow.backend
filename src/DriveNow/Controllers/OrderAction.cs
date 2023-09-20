@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using DriveNow.Commands;
+using DriveNow.Commands.Trip;
 using DriveNow.Context;
 using DriveNow.DBContext;
 using DriveNow.DTO;
@@ -22,10 +23,6 @@ namespace DriveNow.Controllers;
 public class OrderAction : ControllerBase
 {
     private readonly IMediator _mediator;
-
-    private readonly string publicKey = "sandbox_i21688834201";
-
-    private readonly string privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
     
     public Guid Id = Guid.NewGuid();
     public OrderAction(IMediator mediator, ShopContext context)
@@ -36,6 +33,7 @@ public class OrderAction : ControllerBase
     //private Guid UserId => Guid.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
     public Guid UserId = Guid.Parse("9500269c-df16-48f7-a7cf-003cb79fd0ed");
+    
     private ShopContext _context;
 
     [HttpPost("CreateOrder")]
@@ -53,104 +51,15 @@ public class OrderAction : ControllerBase
     }
 
     [HttpPost("create-payment")]
-    public async Task<IActionResult> CreatePayment()
+    public async Task<string> CreatePayment(PayLinkInputModel model,CancellationToken cancellationToken)
     {
-
-        var invoiceRequest = new LiqPayRequest
-        {
-            Email = "email6@example.com",
-            Amount = 2000,
-            Currency = "UAH",
-            OrderId = Id.ToString(),
-            Action = LiqPayRequestAction.InvoiceSend,
-            Language = LiqPayRequestLanguage.EN,
-            Description = "Car Number 213",
-            Version = 3,
-            PublicKey = publicKey,
-            ResultUrl = "http://localhost:4200/map-car",
-            ServerUrl = "https://drive-now-backend.azurewebsites.net/api/payment/callback"
-        };
-
-        var liqPayClient = new LiqPayClient(publicKey, privateKey);
-
-        var response = await liqPayClient.RequestAsync("request", invoiceRequest);
-
-        return Ok(new { Response = response });
+        return await _mediator.Send(new PayLinkCommand(model, UserId), cancellationToken);
     }
-
+    
     [HttpPost("callback")]
 
     public async Task<IActionResult> Callback([FromForm] string data, [FromForm] string signature,CancellationToken cancellationToken)
     {
-        if (signature == CalculateSignature(data))
-        {
-            string api_url = "https://www.liqpay.ua/api/request";
-            string json = $@"
-        {{
-            ""action"": ""status"",
-            ""version"": 3,
-            ""public_key"": ""{publicKey}"",
-            ""order_id"": ""{Id.ToString()}""
-        }}";
-
-
-            // Encode the JSON data as base64
-            byte[] dataBytes = Encoding.UTF8.GetBytes(json);
-            string DATA = Convert.ToBase64String(dataBytes);
-
-            // Calculate the signature
-            string dataToSign = privateKey + DATA + privateKey;
-            byte[] signatureBytes = System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(dataToSign));
-            string SIGNATURE = Convert.ToBase64String(signatureBytes);
-            using (HttpClient client = new HttpClient())
-            {
-                var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("data", DATA),
-                    new KeyValuePair<string, string>("signature", SIGNATURE)
-                });
-
-                HttpResponseMessage response = await client.PostAsync(api_url, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string result = await response.Content.ReadAsStringAsync();
-                    
-                    var rider = await _context.trips.Where(user => user.UserId == UserId).ToListAsync();
-
-                    foreach (var trip in rider)
-                    {
-                        trip.Status = !trip.Status;
-                    }
-
-
-                    await _context.SaveChangesAsync();
-
-                    return Ok("Okey");
-                }
-                else
-                {
-                    return BadRequest("Error");
-                }
-            }
-        }
-
-        return BadRequest("Error");
-    } 
-    string CalculateSignature(string data)
-    {
-        // Concatenate private_key, data, and private_key again
-        string concatenatedString = privateKey + data + privateKey;
-
-        // Calculate SHA-1 hash
-        using (SHA1 sha1 = SHA1.Create())
-        {
-            byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(concatenatedString));
-
-            // Convert the hash to base64
-            string signature = Convert.ToBase64String(hashBytes);
-
-            return signature;
-        }
+        return await _mediator.Send(new LiqPayCallbackCommand(data, signature, UserId), cancellationToken);
     }
-    }
+}

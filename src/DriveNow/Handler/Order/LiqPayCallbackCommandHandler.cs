@@ -5,67 +5,106 @@ using DriveNow.Context;
 using DriveNow.DBContext;
 using DriveNow.Model;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DriveNow.Handler;
 
-public class LiqPayCallbackCommandHandler: IRequestHandler<LiqPayCallbackCommand, string>
+public class LiqPayCallbackCommandHandler : ControllerBase, IRequestHandler<LiqPayCallbackCommand, IActionResult>
 {
     public ShopContext _context { get; set; }
     
     public string publicKey = "sandbox_i21688834201";
                                                  
-    public string privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
+    public string privateKey = "a4825234f4bae72a0be04eafe9e8e2bada209255";
 
     public LiqPayCallbackCommandHandler(ShopContext context)
     {
         _context = context;
     }
 
-    public async Task<string> Handle(LiqPayCallbackCommand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(LiqPayCallbackCommand command, CancellationToken cancellationToken)
     {
-        if (IsValidSignature(command.Data, command.Signature))
+        if (command._model.Signature == CalculateSignature(command._model.Data))
         {
-            var trip_check = await _context.trips.FirstOrDefaultAsync(user => user.UserId == command._UserId);
+            string api_url = "https://www.liqpay.ua/api/request";
 
-            trip_check.Status = !trip_check.Status;
+            Context.Trip user_trip = await _context.trips.FirstOrDefaultAsync(trip => (trip.UserId == command._UserId)&&(trip.Status));
+            
+            string json = $@"
+        {{
+            ""action"": ""status"",
+            ""version"": 3,
+            ""public_key"": ""{publicKey}"",
+            ""order_id"": ""{user_trip.TripId.ToString()}""
+        }}";
 
-            await _context.SaveChangesAsync();
 
-            return "Okey";
+            // Encode the JSON data as base64
+            byte[] dataBytes = Encoding.UTF8.GetBytes(json);
+            string DATA = Convert.ToBase64String(dataBytes);
+
+            // Calculate the signature
+            string dataToSign = privateKey + DATA + privateKey;
+            byte[] signatureBytes = System.Security.Cryptography.SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(dataToSign));
+            string SIGNATURE = Convert.ToBase64String(signatureBytes);
+            using (HttpClient client = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("data", DATA),
+                    new KeyValuePair<string, string>("signature", SIGNATURE)
+                });
+
+                HttpResponseMessage response = await client.PostAsync(api_url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    Car car = await _context.cars.FirstOrDefaultAsync(car => car.CarId == user_trip.CarId);
+
+                    user_trip.Status = !user_trip.Status;
+
+                    if (car != null)
+                    {
+                        _context.orders.Add(new Order
+                        {
+                            UserId = command._UserId,
+                            OrderId = user_trip.TripId,
+                            TotalPrice = car.Price,
+                            OrderTime = DateTimeOffset.Now,
+                            Promocode = "",
+                            CarId = car.CarId
+                        });
+                    }
+                    
+                    await _context.SaveChangesAsync();
+
+                    return Ok("Okey");
+                }
+                else
+                {
+                    return BadRequest("Error");
+                }
+            }
         }
-        else
-        {
-            return null;
-        }
+
+        return BadRequest("Error");
     }
-    private bool IsValidSignature(string data, string signature)
+    string CalculateSignature(string data)
     {
+        // Concatenate private_key, data, and private_key again
+        string concatenatedString = privateKey + data + privateKey;
+
+        // Calculate SHA-1 hash
         using (SHA1 sha1 = SHA1.Create())
         {
-            var computedSignatureBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(privateKey + data + privateKey));
-            var computedSignature = Convert.ToBase64String(computedSignatureBytes);
-            return computedSignature == signature;
-        }
-    }
-    static string GenerateLiqPaySignature(string privateKey, string data)
-    {
-        // Concatenate the private key, data, and private key again
-        string concatenatedData = $"{privateKey}{data}{privateKey}";
+            byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(concatenatedString));
 
-        // Compute the SHA1 hash of the concatenated data
-        using (SHA1Managed sha1 = new SHA1Managed())
-        {
-            byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(concatenatedData));
+            // Convert the hash to base64
+            string signature = Convert.ToBase64String(hashBytes);
 
-            // Convert the hash to lowercase hexadecimal
-            StringBuilder signatureBuilder = new StringBuilder();
-            foreach (byte b in hashBytes)
-            {
-                signatureBuilder.Append(b.ToString("x2"));
-            }
-
-            return signatureBuilder.ToString();
+            return signature;
         }
     }
 }

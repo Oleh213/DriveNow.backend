@@ -39,7 +39,6 @@
     <None Remove="Controllers\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\" />
     <Folder Include="Context\" />
     <Folder Include="DBContext\" />
     <Folder Include="Controllers\" />
