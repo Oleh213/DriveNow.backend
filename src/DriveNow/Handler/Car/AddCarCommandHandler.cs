@@ -36,10 +36,7 @@ namespace DriveNow.Handler
 
             _mapper = mapper;
         }
-
-       
-
-
+        
         public string UserId = "38d5f673-5834-4c0b-bc21-5714a4a1fe27";
 
         public async Task<string> Handle(CarCommand command, CancellationToken cancellationToken)
@@ -80,7 +77,8 @@ namespace DriveNow.Handler
                             Year = command.NewCarInputModel.Year,
                             About = command.NewCarInputModel.About,
                             AccualFileUrl = docName,
-                            Address = command.NewCarInputModel.Address,
+                            Latitude = command.NewCarInputModel.Latitude,
+                            Longitude = command.NewCarInputModel.Longitude,
                             Free = Free.Yes,
                             CategoryForId = categoty_main.CategoryId
                         });
@@ -111,7 +109,8 @@ namespace DriveNow.Handler
                                 CategoryName = command.NewCarInputModel.Category,
                                 CategoryId = Guid.NewGuid()
                             },
-                            Address = command.NewCarInputModel.Address,
+                            Latitude = command.NewCarInputModel.Latitude,
+                            Longitude = command.NewCarInputModel.Longitude,
                             PowerReserve = command.NewCarInputModel.PowerReserve
                         });
 

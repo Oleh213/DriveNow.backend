@@ -12,7 +12,9 @@ public class CarMapModel
     
     public int? Discount { get; set; }
     
-    public string Address { get; set; }
+    public double Latitude { get; set; }
+		
+    public double Longitude { get; set; }
     
     public Catogory Category { get; set; }
     

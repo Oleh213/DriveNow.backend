@@ -20,7 +20,7 @@ public class StartTripCommandHandler: IRequestHandler<StartTripCommand, string>
             TripId = Guid.NewGuid(),
             CarId = command._Model.CarId,
             UserId = command.UserId,
-            StartTrip = command._Model.StartTrip,
+            StartTrip = DateTimeOffset.Now,
             Status = true
         });
         await _context.SaveChangesAsync();
