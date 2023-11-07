@@ -20,13 +20,13 @@ public class TripAction
         _mediator = mediator;
     }
     [HttpPost("StartTrip")]
-    public async Task<string> StartTrip(StartTripModel model, CancellationToken cancellationToken)
+    public async Task<UserTripModel> StartTrip([FromBody]StartTripModel model, CancellationToken cancellationToken)
     {
         return await _mediator.Send(new StartTripCommand(model,UserId), cancellationToken);
     }
 
     [HttpGet("CheckTrip")]
-    public async Task<TripModel> CheckTrip(CancellationToken cancellationToken)
+    public async Task<UserTripModel> CheckTrip(CancellationToken cancellationToken)
     {
         return await _mediator.Send(new ShowUserTripCommand(UserId), cancellationToken);
     }

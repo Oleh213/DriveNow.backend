@@ -12,4 +12,6 @@ public class Trip
     public DateTimeOffset StartTrip { get; set; }
     
     public Boolean Status { get; set; }
+    
+    public string PaymentUrl { get; set; }
 }

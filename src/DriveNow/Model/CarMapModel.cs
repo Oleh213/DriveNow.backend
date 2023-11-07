@@ -16,7 +16,8 @@ public class CarMapModel
 		
     public double Longitude { get; set; }
     
-    public Catogory Category { get; set; }
+    public string Category { get; set; }
+    public string PowerReserve { get; set; }
     
     public string Free { get; set; }
     

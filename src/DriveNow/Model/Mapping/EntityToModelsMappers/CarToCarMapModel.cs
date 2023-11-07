@@ -14,7 +14,8 @@ public class CarToCarMapModel: Profile
             .ForMember(dst => dst.Discount, opt => opt.MapFrom(src => src.Discount))
             .ForMember(dst => dst.Latitude, opt => opt.MapFrom(src => src.Latitude))
             .ForMember(dst => dst.Longitude, opt=>opt.MapFrom(src=>src.Longitude))
-            .ForMember(dst => dst.Category, opt => opt.MapFrom(src => src.Catogories))
+            .ForMember(dst=>dst.PowerReserve, opt => opt.MapFrom(src=>src.PowerReserve))
+            .ForMember(dst => dst.Category, opt => opt.MapFrom(src => src.Catogories.CategoryName))
             .ForMember(dst => dst.Free, opt => opt.MapFrom(src => src.Free))
             .ForMember(dst => dst.PhotoUrl, opt => opt.MapFrom(src => src.AccualFileUrl));
     }

@@ -34,15 +34,8 @@ namespace DriveNow.Handlier
 
 					return result;
 				}
-				else
-				{
-					return null;
-				}
 			}
-			else
-			{
-				return null;
-			}
+			return null;
         }
     }
 }

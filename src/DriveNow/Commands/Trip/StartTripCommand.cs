@@ -3,7 +3,7 @@ using MediatR;
 
 namespace DriveNow.Commands.Trip;
 
-public class StartTripCommand: IRequest<string>
+public class StartTripCommand: IRequest<UserTripModel>
 {
     
     public Guid UserId { get; set; }
