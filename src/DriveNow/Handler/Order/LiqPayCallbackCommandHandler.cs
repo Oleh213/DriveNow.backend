@@ -16,7 +16,7 @@ public class LiqPayCallbackCommandHandler : ControllerBase, IRequestHandler<LiqP
     
     public string publicKey = "sandbox_i21688834201";
                                                  
-    public string privateKey = "a4825234f4bae72a0be04eafe9e8e2bada209255";
+    public string privateKey = "sandbox_SQ8Wu9QY1XfXmaqmy4wu1TpL1qC4WTu0KQ83DhD7";
 
     public LiqPayCallbackCommandHandler(ShopContext context)
     {
