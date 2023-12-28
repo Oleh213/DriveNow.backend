@@ -25,20 +25,16 @@ namespace DriveNow.Controllers
 
 		private readonly IOptions<AuthOptions> options;
 		private readonly ILogger<SingInAction> _logger;
-
+		private readonly IMediator _mediator;
 		
-		public SingInAction(ShopContext context, IOptions<AuthOptions> options, ILogger<SingInAction> logger)
+		public SingInAction(ShopContext context, IOptions<AuthOptions> options, ILogger<SingInAction> logger,IMediator mediator)
 		{
 			_context = context;
 			this.options = options;
 			_logger = logger;
-		}
-		private readonly IMediator _mediator;
-		 
-		public SingInAction(IMediator mediator)
-		{
 			_mediator = mediator;
 		}
+		
 
 		[HttpPost("SingInUser")]
 		public async Task<string> SingIn(SingInInputModel singInInputModel, CancellationToken cancellationToken)

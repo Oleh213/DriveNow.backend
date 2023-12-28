@@ -80,7 +80,8 @@ namespace DriveNow.Handler
                             Latitude = command.NewCarInputModel.Latitude,
                             Longitude = command.NewCarInputModel.Longitude,
                             Free = Free.Yes,
-                            CategoryForId = categoty_main.CategoryId
+                            CategoryForId = categoty_main.CategoryId,
+                            PowerReserve = command.NewCarInputModel.PowerReserve
                         });
 
                         await _context.SaveChangesAsync();

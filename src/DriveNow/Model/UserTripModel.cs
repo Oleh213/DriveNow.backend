@@ -10,7 +10,9 @@ public class UserTripModel
     
     public string CarId { get; set; }
     
+    public int Price { get; set; }
+    
     public Boolean Status { get; set; }
 
-    public DateTimeOffset StartTrip { get; set; }
+    public DateTime StartTrip { get; set; }
 }

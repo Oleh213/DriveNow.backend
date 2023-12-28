@@ -48,6 +48,13 @@ namespace DriveNow.Controllers
 		{
 			return await _mediator.Send(new ChangeStatusCommand(UserId, carId), cancellationToken);
 		}
+
+		[HttpGet("ShowCarDetails")]
+
+		public async Task<CarModel> ShowCarDetails(Guid carId, CancellationToken cancellationToken)
+		{
+			return await _mediator.Send(new ShowCarDetailsCommand(carId),cancellationToken);
+		}
 		
 		[HttpPost("webhook")]
 		public async Task<IActionResult> Index()

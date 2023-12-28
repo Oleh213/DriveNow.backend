@@ -37,8 +37,9 @@ public class ShowUserTripCommandHandler: IRequestHandler<ShowUserTripCommand,Use
                         Latitude = car_ride.Latitude,
                         CarName = car_ride.NameCar,
                         Status = check_ride.Status,
-                        StartTrip = check_ride.StartTrip,
-                        CarId = car_ride.CarId.ToString()
+                        StartTrip = check_ride.StartTrip.DateTime,
+                        CarId = car_ride.CarId.ToString(),
+                        Price = car_ride.Price
                     };
             
             return result;

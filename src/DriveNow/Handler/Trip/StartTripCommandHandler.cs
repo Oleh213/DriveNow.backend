@@ -40,7 +40,7 @@ public class StartTripCommandHandler: IRequestHandler<StartTripCommand, UserTrip
             Latitude = car.Latitude,
             CarName = car.NameCar,
             Status = true,
-            StartTrip = DateTimeOffset.Now
+            StartTrip = DateTime.Now
         };
         
         await _context.SaveChangesAsync();
